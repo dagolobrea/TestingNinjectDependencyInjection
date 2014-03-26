@@ -15,20 +15,29 @@ namespace TestingNinjectDependencyInjection
             Console.ReadLine();
         }
     }
-
-    public class MailSender
+    public interface IMailSender
+    {
+        void Send(string adress, string subject);
+    }
+    public class MailSender : IMailSender
     {
         public void Send(string adress, string subject)
         {
             Console.WriteLine("Send mail to [{0}] with subject [{1}]", adress, subject);
         }
     }
-
+    public class MockMailSender : IMailSender
+    {
+        public void Send(string adress, string subject)
+        {
+            Console.WriteLine("Mocking send mail to [{0}] with subject [{1}]", adress, subject);
+        }
+    }
     public class FormHandler
     {
         public void Handle(string adress)
         {
-            MailSender sender = new MailSender();
+            IMailSender sender = new MockMailSender();
             sender.Send(adress, "Ejemplo non-Ninject");
         }
     }
