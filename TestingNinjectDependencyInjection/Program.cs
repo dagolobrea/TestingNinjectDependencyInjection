@@ -29,8 +29,14 @@ namespace TestingNinjectDependencyInjection
     }
     public class MailSender : IMailSender
     {
+        private readonly ILogging logging;
+        public MailSender(ILogging logging)
+        {
+            this.logging = logging;
+        }
         public void Send(string adress, string subject)
         {
+            logging.Debug("Sending mail");
             Console.WriteLine("Send mail to [{0}] with subject [{1}]", adress, subject);
         }
     }
@@ -58,6 +64,18 @@ namespace TestingNinjectDependencyInjection
         public override void Load()
         {
             Bind<IMailSender>().To<MailSender>();
+            Bind<ILogging>().To<MockLogging>();
+        }
+    }
+    public interface ILogging
+    {
+        void Debug(string message);
+    }
+    public class MockLogging : ILogging
+    {
+        public void Debug(string message)
+        {
+            Console.WriteLine("-- DEBUG --: {0}", message);
         }
     }
 }
