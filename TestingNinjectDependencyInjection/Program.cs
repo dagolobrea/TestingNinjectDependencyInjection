@@ -9,7 +9,8 @@ namespace TestingNinjectDependencyInjection
     {
         static void Main(string[] args)
         {
-            FormHandler formHandler = new FormHandler();
+            FormHandler formHandler = new FormHandler(new MailSender());
+            //FormHandler formHandler = new FormHandler(new MockMailSender());
             formHandler.Handle("test@test.es");
 
             Console.ReadLine();
@@ -35,11 +36,14 @@ namespace TestingNinjectDependencyInjection
     }
     public class FormHandler
     {
+        private readonly IMailSender sender;
+        public FormHandler(IMailSender sender)
+        {
+            this.sender = sender;
+        }
         public void Handle(string adress)
         {
-            IMailSender sender = new MockMailSender();
-            sender.Send(adress, "Ejemplo non-Ninject");
+            this.sender.Send(adress, "Ejemplo non-Ninject");
         }
     }
-
 }
