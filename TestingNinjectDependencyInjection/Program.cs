@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Ninject.Modules;
+using Ninject;
+using System.Reflection;
 
 namespace TestingNinjectDependencyInjection
 {
@@ -9,7 +12,11 @@ namespace TestingNinjectDependencyInjection
     {
         static void Main(string[] args)
         {
-            FormHandler formHandler = new FormHandler(new MailSender());
+            IKernel kernel = new StandardKernel();
+            kernel.Load(Assembly.GetExecutingAssembly());
+            IMailSender mailSender = kernel.Get<IMailSender>();
+
+            FormHandler formHandler = new FormHandler(mailSender);
             //FormHandler formHandler = new FormHandler(new MockMailSender());
             formHandler.Handle("test@test.es");
 
@@ -44,6 +51,13 @@ namespace TestingNinjectDependencyInjection
         public void Handle(string adress)
         {
             this.sender.Send(adress, "Ejemplo non-Ninject");
+        }
+    }
+    public class Bindings : NinjectModule
+    {
+        public override void Load()
+        {
+            Bind<IMailSender>().To<MailSender>();
         }
     }
 }
